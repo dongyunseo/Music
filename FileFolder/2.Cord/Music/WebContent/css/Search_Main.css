@@ -1,0 +1,37 @@
+  .search_engine {
+    border: none; 
+    border-radius: 10px;
+    height: 20px;
+    width: 100%;
+    text-align: left;
+    font-size: 12px;
+    padding-left: 10px;
+    border-width: 5px;
+    outline: none; /* 포커스시 발생하는 테두리 제거 */ 
+  }
+
+  ._search {
+    border: none; 
+    height: 35px;
+    width: 55px;
+    padding-right: 6px;
+    padding-top: 3px;
+    border-radius: 10px;
+    background-color: white;
+    transition: background-color 0.3s; /* 배경색 변화에 대한 transition 추가 */
+}
+
+._search:hover {
+    background-color: #d4d4d4; /* 마우스를 버튼 위로 올렸을 때의 배경색 */
+}
+
+.Search_List {
+    max-width: 1000px;
+    margin: 15px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding-top: 10px;
+    opacity: 0.9; /* 투명도를 50%로 설정 */
+    border: 2px solid black; /* 테두리 스타일 및 색상 설정 */
+}

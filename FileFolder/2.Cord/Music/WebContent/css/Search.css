@@ -1,0 +1,88 @@
+.search_engine {
+	border: none;
+	border-radius: 10px;
+	height: 20px;
+	width: 100%;
+	text-align: left;
+	font-size: 12px;
+	padding-left: 10px;
+	outline: none; /* 포커스시 발생하는 테두리 제거 */
+}
+
+._search {
+	border: none;
+	height: 35px;
+	width: 55px;
+	padding-right: 6px;
+	padding-top: 3px;
+	border-radius: 10px;
+	background-color: white;
+	transition: background-color 0.3s; /* 배경색 변화에 대한 transition 추가 */
+}
+
+._search:hover {
+	background-color: #d4d4d4; /* 마우스를 버튼 위로 올렸을 때의 배경색 */
+}
+
+.container_Search {
+	max-width: 1000px;
+    margin: 108px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 0px;
+    opacity: 0.9;
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    z-index: 1;
+    overflow: auto;
+}
+
+.Search_List {
+	max-width: 1000px;
+	margin: 15px auto;
+	margin-top: 133px;
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	padding-top: 10px;
+	opacity: 0.9; /* 투명도를 50%로 설정 */
+	font-size: 12px;
+}
+
+.Rank {
+	width: 10%;
+}
+
+.img {
+	width: 5%;
+}
+
+.title {
+	width: 50%;
+}
+
+.Singer {
+	width: 30%;
+}
+
+.title td {
+	text-align: left;
+}
+
+.title_Singer_List {
+	margin-left: 15px;
+	padding: 10px;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+.Genre_List {
+	margin-left: 15px;
+	padding: 10px;
+	font-size: 15px;
+	font-weight: bold;
+	margin-top: 10px;
+}
