@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import com.Music.dto.Idol_MemberVo;
 import com.Music.dto.MusicVo;
+import com.Music.dto.idol_GroupVo;
 import com.Music.util.DBConn;
 
 public class MusicDao {
@@ -44,11 +46,26 @@ public class MusicDao {
 	    return Graph_Dto;
 	}
 	// -------------------------- Top10 img ------------------
-	public ArrayList<MusicVo> Select_TopTen_Img(String Platform) {
+	public ArrayList<idol_GroupVo> Select_TopTen_Img(String Platform) {
 	    System.out.println("Select_TopTen_Img 접속완료 !.....");
-	    ArrayList<MusicVo> topTenDtoList = new ArrayList<>();
+	    ArrayList<idol_GroupVo> topTenDtoList = new ArrayList<>();
 	    Connection con = DBConn.getConnection();
-	    String sql = "SELECT album_img_urls FROM Music WHERE 1=1 AND Platform = '" + Platform + "' and Day = (Select max(Day) from Music where Platform = '" + Platform + "') and Ranking < 11  order by Ranking asc";
+	    String sql = "SELECT A.Album_img_urls as Album_img_urls,\r\n" + 
+	    "	   C.Group_Name as Group_Name,\r\n" + 
+	    "   	   C.Group_ImgUrl as Group_ImgUrl, \r\n" + 
+	    "       C.debut_Year as debut_Year,\r\n" + 
+	    "       C.debut_song as debut_song, \r\n" + 
+	    "       C.Year_Active as Year_Active, \r\n" + 
+	    "       C.Group_type as Group_type,\r\n" + 
+	    "       C.Genre_Text as Genre_Text,\r\n" + 
+	    "       C.Company as Company \r\n" + 
+	    "  FROM Music A, idol_Group C\r\n" + 
+	    " WHERE 1=1 \r\n" + 
+	    "  AND A.Platform =  '" + Platform + "'  \r\n" + 
+	    "  AND A.Day = (Select max(B.Day) from Music B where B.Platform = '" + Platform + "') \r\n" + 
+	    "  AND A.Ranking < 11 \r\n" + 
+	    "  AND A.Singer = C.Group_Name\r\n" + 
+	    "  Order by A.Ranking asc";
 	    System.out.println("======================================================= ");
 	    System.out.println("Top10 Img Sql문 : "+ sql);
 	    Statement st = null;
@@ -57,7 +74,17 @@ public class MusicDao {
 	        st = con.createStatement();
 	        rs = st.executeQuery(sql);
 	        while (rs.next()) {
-	            MusicVo topTenDto = new MusicVo(null, 0, null, null, rs.getString("album_img_urls"), 0, null, null, null, 0, null);
+	        	idol_GroupVo topTenDto = new idol_GroupVo(
+	                    rs.getString("Album_img_urls"),
+	                    rs.getString("Group_Name"),
+	                    rs.getString("Group_ImgUrl"),
+	                    rs.getDate("debut_Year"),
+	                    rs.getString("debut_song"),
+	                    rs.getString("Year_Active"),
+	                    rs.getString("Group_type"),
+	                    rs.getString("Genre_Text"),
+	                    rs.getString("Company")
+	                );
 	            topTenDtoList.add(topTenDto);
 	        }
 	        DBConn.close(st, rs);
@@ -66,6 +93,42 @@ public class MusicDao {
 	    }
 	    return topTenDtoList;
 	}
+	
+	// -------------------------- Top10 Member------------------
+		public ArrayList<Idol_MemberVo> Select_TopTenMember(String Platform) {
+		    System.out.println("Select_TopTen_Img 접속완료 !.....");
+		    ArrayList<Idol_MemberVo> TopTenMemberList = new ArrayList<>();
+		    Connection con = DBConn.getConnection();
+		    String sql = "select B.Group_Name, B.Member_Name, B.Member_ImgUrl  \r\n" + 
+		    		"  FROM Music A, idol_member B, idol_Group C\r\n" + 
+		    		" WHERE 1=1 \r\n" + 
+		    		"  AND B.Group_Name = C.Group_Name\r\n" + 
+		    		"  AND A.Platform =  '" + Platform + "'  \r\n" +  
+		    		"  AND A.Day = (Select max(B.Day) from Music B where B.Platform = '" + Platform + "') \r\n" + 
+		    		"  AND A.Ranking < 11 \r\n" + 
+		    		"  AND A.Singer = C.Group_Name \r\n" + 
+		    		" group by B.Group_Name, B.Member_Name, B.Member_ImgUrl";
+		    System.out.println("======================================================= ");
+		    System.out.println("Top10 Member Sql문 : "+ sql);
+		    Statement st = null;
+		    ResultSet rs = null;
+		    try {
+		        st = con.createStatement();
+		        rs = st.executeQuery(sql);
+		        while (rs.next()) {
+		        	Idol_MemberVo topTenMember = new Idol_MemberVo(
+		                    rs.getString("Group_Name"),
+		                    rs.getString("Member_Name"),
+		                    rs.getString("Member_ImgUrl")
+		                );
+		        	TopTenMemberList.add(topTenMember);
+		        }
+		        DBConn.close(st, rs);
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		    return TopTenMemberList;
+		}
 	// -------------------------- Top100 정보------------------
 		public ArrayList<MusicVo> Select_Top100(String Platform) {
 		    System.out.println("Select_Top100_List 접속완료 !.....");
@@ -89,6 +152,50 @@ public class MusicDao {
 		    }
 		    return Top100_DtoList;
 		}
+		
+		// -------------------------- Top100 그래프 정보------------------
+		public ArrayList<MusicVo> Select_AjaxTop100_LineChart(String Platform) {
+		    System.out.println("Select_Top100_LineChart 접속완료 !.....");
+		    ArrayList<MusicVo> Top100Line_DtoList = new ArrayList<>();
+		    Connection con = DBConn.getConnection();
+		    String sql = "SELECT m.ranking, m.title, m.day, m.view_count \r\n" + 
+		    		"FROM Music m \r\n" + 
+		    		"JOIN (SELECT ranking, title \r\n" + 
+		    		"FROM Music \r\n" + 
+		    		"WHERE Platform ='" + Platform + "' \r\n" + 
+		    		"AND Day = (SELECT MAX(Day) FROM Music WHERE Platform = '" + Platform + "')\r\n" + 
+		    		"ORDER BY ranking ASC\r\n" + 
+		    		"LIMIT 100) rt ON m.title = rt.title \r\n" + 
+		    		"WHERE m.Platform = '" + Platform + "' \r\n" + 
+		    		"AND m.Day BETWEEN (SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 140 DAY), '%Y%m%d'))\r\n" + 
+		    		"AND (SELECT MAX(Day) FROM Music WHERE Platform = '" + Platform + "')\r\n" + 
+		    		"ORDER BY \r\n" + 
+		    		"rt.ranking,\r\n" + 
+		    		"m.title, \r\n" + 
+		    		"m.day ASC";
+		    System.out.println("======================================================= ");
+		    System.out.println("Top100_LineChart : " + sql);
+		    Statement st = null;
+		    ResultSet rs = null;
+		    try {
+		        st = con.createStatement();
+		        rs = st.executeQuery(sql);
+		        while (rs.next()) {
+		            MusicVo top100LineDto = new MusicVo();
+		            top100LineDto.setRanking(rs.getInt("ranking"));
+		            top100LineDto.setTitle(rs.getString("title"));
+		            top100LineDto.setDay(rs.getString("day"));
+		            top100LineDto.setView_Count(rs.getInt("view_count"));
+
+		            Top100Line_DtoList.add(top100LineDto);
+		        }
+		        DBConn.close(st, rs);
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		    return Top100Line_DtoList;
+		}
+		
 	// 장르별 그래프 
 	public ArrayList<MusicVo> Select_Genre_Graph(String Platform) {
 	    System.out.println("Genre_Select_Graph 접속완료 !.....");
